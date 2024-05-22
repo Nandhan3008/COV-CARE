@@ -1,0 +1,414 @@
+#include<Servo.h>
+
+  #define motora1 3
+  #define motorb1 2
+  #define motora2 12
+  #define motorb2 13
+  #define enA 6
+  #define enB 5
+ 
+
+
+  #define LirSensor 8
+  #define RirSensor 7
+ 
+
+  
+  Servo servo;
+ 
+
+  #define TRIG A3
+  #define ECHO A4
+#define S0 0
+#define S1 1
+#define S2 9
+#define S3 10
+#define sensorOut 11
+
+int frequency = 0;
+int A;
+int R;
+int G;
+int B;
+ 
+  
+  int a=1;
+  int duration = 0;
+  unsigned int distance = 0;
+  unsigned int leftDistance;
+  unsigned int rightDistance;
+  boolean object;
+  int LEFT_SENSOR;
+  int RIGHT_SENSOR;
+ 
+
+  
+  int servo_angle = 90;        
+ 
+  int Motor_speed = 190;        
+  int LeftRotationSpeed = 150;  
+  int RightRotationSpeed = 150; 
+  int righttyre = 155;          
+  int lefttyre = 155;           
+ 
+  int setDistance = 15;  
+  int color;
+  int n=0;      
+ 
+ 
+
+  void setup() {
+   TCCR0B = TCCR0B & B11111000 | B00000010 ;
+
+    Serial.begin(9600);
+    pinMode(motora1, OUTPUT);
+    pinMode(motorb1, OUTPUT);
+    pinMode(motora2, OUTPUT);
+    pinMode(motorb2, OUTPUT);
+ 
+
+    pinMode(enA, OUTPUT);
+    pinMode(enB, OUTPUT);
+ 
+
+    pinMode(LirSensor, INPUT);
+    pinMode(RirSensor, INPUT);
+ 
+
+    pinMode(TRIG , OUTPUT);
+    pinMode(ECHO , INPUT);
+ 
+
+    servo.attach(10);
+    servo.write(90);
+
+    pinMode(S0, OUTPUT);
+  pinMode(S1, OUTPUT);
+  pinMode(S2, OUTPUT);
+  pinMode(S3, OUTPUT);
+  pinMode(sensorOut, INPUT);
+  
+  // Setting frequency-scaling to 20%
+  digitalWrite(S0,HIGH);
+  digitalWrite(S1,LOW);
+ 
+
+  }
+ 
+
+  void loop() 
+  {
+    color=colour();
+   if(n==0){
+    if (color==2)
+    {
+      int n=1; 
+      singleleft1();
+       }
+   }
+    distance = getDistance();
+    Serial.print("dist: ");
+    Serial.println(distance);
+    detect the object.
+    if (distance <= setDistance)
+   {
+       singleright();
+        delay(3000);
+        Stop();
+        delay(3000);
+        forward1();
+        delay(2500);
+        Stop();
+        delay(3000);
+        singleleft();
+        delay(1500);
+        Stop();
+        delay(3000);
+        forward1();
+        delay(3000);
+        Stop();
+        delay(3000);
+        singleleft();
+        delay(2000);
+        Stop();
+        delay(3000);
+        forward2();
+        delay(850);
+        Stop();
+        delay(3000);
+        singleright();
+        delay(2000);
+        
+        Serial.println("moveright");
+    }
+    if(a==1);
+    {
+   
+      int LEFT_SENSOR = digitalRead(LirSensor);
+      int RIGHT_SENSOR = digitalRead(RirSensor);
+ 
+
+      Serial.print("leftsenor: ");
+      Serial.print(LEFT_SENSOR);
+      Serial.print("   ");
+      Serial.print("RIghtsenor: ");
+      Serial.print(RIGHT_SENSOR);
+ 
+
+      if (RIGHT_SENSOR == 0 && LEFT_SENSOR == 0) {
+         forward(); //FORWARD
+        Serial.println("   forword");
+      }
+      else if (RIGHT_SENSOR == 1 && LEFT_SENSOR == 0) {
+        right(); //Move Right
+        Serial.println("   right turn");
+      }
+      else if (RIGHT_SENSOR == 0 && LEFT_SENSOR == 1) {
+        left(); //Move Left
+        Serial.println("   left turn");
+      }
+      else if (RIGHT_SENSOR == 1 && LEFT_SENSOR == 1) {
+        //Serial.println("stop then grab an object");
+        backward();
+      }
+    }
+  }
+  int getDistance() {
+    digitalWrite(TRIG , LOW);
+    delayMicroseconds(2);
+    digitalWrite(TRIG , HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIG , LOW);
+    duration = pulseIn(ECHO , HIGH);
+    distance = (duration / 2) / 29.1 ;  //29.1 is a speed of sound.
+    return distance;
+  }
+ 
+
+  int lookLeft () {
+    
+    servo.write(150);
+    delay(3000);
+    leftDistance = getDistance();
+    delay(1000);
+    servo.write(90);
+    Serial.print("Left:");
+    Serial.print(leftDistance);
+    return leftDistance;
+    delay(1000);
+  }
+ 
+
+  int lookRight() {
+    
+    servo.write(30);
+    delay(3000);
+    rightDistance = getDistance();
+    delay(1000);
+    servo.write(90);
+    Serial.print("   ");
+    Serial.print("Right:");
+    Serial.println(rightDistance);
+    return rightDistance;
+    delay(1000);
+  }
+   
+  void forward()
+  {
+    digitalWrite(motora1, HIGH);
+    digitalWrite(motorb1, LOW);
+    digitalWrite(motora2, HIGH);
+    digitalWrite(motorb2, LOW);
+    analogWrite(enA, LeftRotationSpeed);
+    analogWrite(enB, RightRotationSpeed);
+   
+  }
+ 
+
+  void right()
+  {
+    digitalWrite(motora1, LOW);
+    digitalWrite(motorb1, HIGH);
+    digitalWrite(motora2, HIGH);
+    digitalWrite(motorb2, LOW);
+    analogWrite(enA, lefttyre+15);
+    analogWrite(enB, righttyre+35);
+  }
+ 
+
+  void left()
+  {
+    digitalWrite(motora1, HIGH);
+    digitalWrite(motorb1, LOW);
+    digitalWrite(motora2, LOW);
+    digitalWrite(motorb2, HIGH);
+    analogWrite(enA, lefttyre+35);
+    analogWrite(enB, righttyre+15);
+  }
+ 
+  void singleleft()
+  {
+    digitalWrite(motora1, HIGH);
+    digitalWrite(motorb1, LOW);
+    digitalWrite(motora2, LOW);
+    digitalWrite(motorb2, HIGH);
+    analogWrite(enA, Motor_speed);
+    analogWrite(enB, Motor_speed);
+    delay(4000);}
+  
+ 
+
+  void singleright()
+  {
+    digitalWrite(motora1, LOW);
+    digitalWrite(motorb1, HIGH);
+    digitalWrite(motora2, HIGH);
+    digitalWrite(motorb2, LOW);
+    analogWrite(enA, Motor_speed);
+    analogWrite(enB, Motor_speed);
+    delay(4000);
+  }
+  void forward1()
+  {
+    digitalWrite(motora1, HIGH);
+    digitalWrite(motorb1, LOW);
+    digitalWrite(motora2, HIGH);
+    digitalWrite(motorb2, LOW);
+    analogWrite(enA, Motor_speed);
+    analogWrite(enB, Motor_speed);
+    delay(4000);
+   
+  }
+ 
+  void backward()
+  {
+    digitalWrite(motora1, LOW);
+    digitalWrite(motorb1, HIGH);
+    digitalWrite(motora2, LOW);
+    digitalWrite(motorb2, HIGH);
+    analogWrite(enA, lefttyre+30);
+    analogWrite(enB, righttyre);
+
+  }
+ void forward2()
+  {
+   if(RIGHT_SENSOR == 0 && LEFT_SENSOR == 0)
+   {
+    digitalWrite(motora1, HIGH);
+    digitalWrite(motorb1, LOW);
+    digitalWrite(motora2, HIGH);
+    digitalWrite(motorb2, LOW);
+    analogWrite(enA, Motor_speed);
+    analogWrite(enB, Motor_speed);
+    delay(1000);
+    Stop(); 
+    delay(3000);
+    forward2();
+   }
+   else if(RIGHT_SENSOR == 1 && LEFT_SENSOR == 0)
+    {
+      singleright();
+      delay(3000);
+    }
+   else if(RIGHT_SENSOR == 0 && LEFT_SENSOR == 1);
+    {
+      singleright();
+      delay(3000);
+    } 
+  }
+   void ultra()
+  {
+     if (RIGHT_SENSOR == 0 && LEFT_SENSOR == 0) {
+        forward(); //FORWARD
+        Serial.println("   forword");
+      }
+      else if (RIGHT_SENSOR == 1 && LEFT_SENSOR == 0) {
+        right(); //Move Right
+        Serial.println("   right turn");
+      }
+      else if (RIGHT_SENSOR == 0 && LEFT_SENSOR == 1) {
+        left(); //Move Left
+        Serial.println("   left turn");
+      }
+      else if (RIGHT_SENSOR == 1 && LEFT_SENSOR == 1) {
+        //Serial.println("stop then grab an object");
+        backward();
+      }       
+  }
+
+void Stop(){
+    digitalWrite(motora1, LOW);
+    digitalWrite(motorb1, LOW);
+    digitalWrite(motora2, LOW);
+    digitalWrite(motorb2, LOW);
+    analogWrite(enA, 0);
+    analogWrite(enB, 0);
+    
+  }
+
+void forwardcolour(){
+    digitalWrite(motora1, HIGH);
+    digitalWrite(motorb1, LOW);
+    digitalWrite(motora2, HIGH);
+    digitalWrite(motorb2, LOW);
+    analogWrite(enA, LeftRotationSpeed);
+    analogWrite(enB, RightRotationSpeed);
+  
+}
+int colour()
+{
+  
+  digitalWrite(S2,LOW);
+  digitalWrite(S3,LOW);
+  
+  frequency = pulseIn(sensorOut, LOW);
+  R=frequency;
+  Serial.print("R= ");//printing name
+  Serial.print(frequency);//printing RED color frequency
+  Serial.print("  ");
+  delay(100);
+
+  digitalWrite(S2,HIGH);
+  digitalWrite(S3,HIGH);
+  
+  frequency = pulseIn(sensorOut, LOW);
+  G=frequency;
+ 
+  Serial.print("G= ");//printing name
+  Serial.print(frequency);//printing RED color frequency
+  Serial.print("  ");
+  delay(100);
+
+ 
+  digitalWrite(S2,LOW);
+  digitalWrite(S3,HIGH);
+  // Reading the output frequency
+  frequency = pulseIn(sensorOut, LOW);
+  B=frequency;
+  
+ 
+  Serial.print("B= ");//printing name
+  Serial.print(frequency);//printing RED color frequency
+  Serial.println("  ");
+  delay(100);
+if(R<G && R<B){
+  A=1;
+}
+else if(G<R && G<B){
+  A=2;
+}
+else{
+  A=3;}
+  Serial.println(A);
+return A;}
+
+void singleleft1()
+  {
+    digitalWrite(motora1, HIGH);
+    digitalWrite(motorb1, LOW);
+    digitalWrite(motora2, LOW);
+    digitalWrite(motorb2, HIGH);
+    analogWrite(enA, Motor_speed);
+    analogWrite(enB, Motor_speed);
+    delay(4000);}
+  
